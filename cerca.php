@@ -23,6 +23,7 @@ include_once('login.php');
 			die ('Could not connect: ' . mysql_error() );
 
 		echo '<br />';
+		//TODO: valutare se necessario lock in lettura qui
 		$query = "(select * from negozio.prodotti\n
 				   where nome LIKE '%$prodotto%')\n
 				   union

@@ -61,6 +61,7 @@ include_once('login.php');
 		//se il campo venisse riscritto subito dopo la lettura.
 		//La consistenza della lettura, anche se è in corso una scrittura, è
 		//garantita da mysql (TODO: verificare quest'ultima frase!)
+		//TODO: valutare se necessario lock in lettura qui
 		$query = "(select * from negozio.prodotti\n
 				   where id = '$id')";
 				
