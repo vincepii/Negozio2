@@ -4,8 +4,9 @@ include_once('login.php');
 <?php
 function formConferma($id, $num, $l)
 {
-	$query = "SELECT * FROM negozio.prodotti
-						WHERE id =" .$id. ";";
+	$query = "SELECT * FROM negozio.prodotti, negozio.prenotazioni
+						WHERE id =" .$id. " and prod_id = id and
+						user_id = '".$_SESSION['user']."';";
 
 	$result = mysql_query($query, $l);
 	if (!$result)
@@ -15,7 +16,7 @@ function formConferma($id, $num, $l)
 	echo "Riepilogo: <br />";
 	echo "Prodotto: ".$row['nome']."<br />";
 	echo "Quantità: ".$num."<br />";
-	echo "Prezzo totale: ".$row['prezzo']." x " .$num. " = " .$row['prezzo'] * $num ."<br />";
+	echo "Prezzo totale: ".$row['prezzo']." x " .$row['pezzi']. " = " .$row['prezzo'] * $row['pezzi'] ."<br />";
 	echo "<form name=\"Conferma\" action=\"pagamento.php\" method=\"get\" >";
 	echo "<input type=\"hidden\" name=\"id\" value=\"".$id."\" />";
 	echo "<input type=\"hidden\" name=\"num\" value=\"".$num."\" />";
