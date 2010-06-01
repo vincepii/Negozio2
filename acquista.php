@@ -1,5 +1,6 @@
 <?php
 include_once('login.php');
+include('db_conn.php');
 
 $id = $_GET['id'];
 $num = $_GET['num'];
@@ -7,9 +8,7 @@ $num = $_GET['num'];
 if ($num == 0)
 	die('Impossibile selezionare 0 pezzi');
 
-$user = 'user';
-$password = 'password';
-$link = mysql_connect('localhost', $user, $password);
+//include('db_conn.php');
 
 //prodotti deve essere aggiornato e disponibili deve rimanere consistente, lock in scrittura
 //su prenotazioni si fa lettura/scrittura, necessario lock in scrittura

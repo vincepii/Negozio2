@@ -1,5 +1,6 @@
 <?php
 include_once('login.php');
+include('db_conn.php');
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
@@ -14,11 +15,7 @@ include_once('login.php');
 <body>
 
 <?php
-$user = 'user';
-$password = 'password';
-$link = mysql_connect('localhost', $user, $password);
-if (!$link)
-	die ('Could not connect: ' . mysql_error() );
+//include('db_conn.php');
 
 $id = $_GET['id'];
 

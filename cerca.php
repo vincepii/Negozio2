@@ -1,5 +1,6 @@
 <?php
 include_once('login.php');
+include('db_conn.php');
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd">
@@ -16,11 +17,7 @@ include_once('login.php');
 
 		<div>
 		<?php
-		$user = 'user';
-		$password = 'password';
-		$link = mysql_connect('localhost', $user, $password);
-		if (!$link)
-			die ('Could not connect: ' . mysql_error() );
+		//include('db_conn.php');
 
 		echo '<br />';
 		//TODO: valutare se necessario lock in lettura qui

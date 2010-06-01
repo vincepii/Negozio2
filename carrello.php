@@ -1,5 +1,6 @@
 <?php
 include_once('login.php');
+include('db_conn.php');
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
@@ -13,9 +14,7 @@ include_once('login.php');
 
 	<body>
 	<?php
-	$user = 'user';
-	$password = 'password';
-	$link = mysql_connect('localhost', $user, $password);
+	//include('db_conn.php');
 
 	//TODO: verificare problema consistenza
 	/*$query = "LOCK TABLES negozio.prenotazioni READ;";

@@ -1,5 +1,6 @@
 <?php
 include_once('login.php');
+include('db_conn.php');
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd">
@@ -14,11 +15,7 @@ include_once('login.php');
 		//lock in lettura sul DB (togliere disp dalla pag prec?)
 		//invio richiesta di acquisto al server (che dovrà riverificare info)
 		$id = $_GET['id'];
-		$user = 'user';
-		$password = 'password';
-		$link = mysql_connect('localhost', $user, $password);
-		if (!$link)
-			die ('Could not connect: ' . mysql_error());
+		//include('db_conn.php');
 				
 		echo "<br />";
 		

@@ -1,5 +1,6 @@
 <?php
 include_once('login.php');
+include('db_conn.php');
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
 "http://www.w3.org/TR/html4/loose.dtd">
@@ -13,10 +14,8 @@ include_once('login.php');
 		<?php
 		$id_prod = $_GET['id'];
 		$num = $_GET['num'];
-		
-		$user = 'user';
-		$password = 'password';
-		$link = mysql_connect('localhost', $user, $password);
+
+		//include('db_conn.php');
 		
 		/*l'utente ha visto il riepilogo delle sue prenotazioni e a quanto
 		ammonta la cifra da pagare. C'è un pulsante "Conferma pagamento".

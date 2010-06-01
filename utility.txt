@@ -5,9 +5,6 @@ values(0,'uno',5,NOW()),(0,'due',5,NOW()),(1,'uno',5,NOW())
 TODO generali:
 * separare le informazioni di CMS (descrizione, img) dalle informazioni sui prodotti dalla tabella prodotti e creare una nuova tabella (CMS) in cui si riporta per ogni id la descrizione e l'immagine
 * fare una funzione generale per le query, che controlla il risultato e stampa eventuali errori
-* usare session_start() all'inizio di ogni pagina e $_SESSION[] per gestire username, oppure i cookies
-* mettere nelle pagine il ritorno alla home (file da includere)
-* mettere le parti per la connessione al db in un file da includere
 * parti ridondanti in un file da includere
 * negli echo usare '' invece di "", consente di non dover mettere gli escape quando ci sono le ""
 * mettere strict.dtd in tutte le pagine (vedere file vuoto generato da geany)
@@ -16,5 +13,4 @@ TODO generali:
 * chiudere le connessioni mysql prima degli errori e sempre prima della fine
 * controllare che gli unlock vengano sempre fatti alla fine di ogni operazione (es quando si esce con die)
 * giustificare tutti i lock
-* mettere la cancellazione in scheda.php per evitare deadlock di tutti i prodotti a 0 disponibilità
 * fare accessi contemporanei al db
