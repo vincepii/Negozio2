@@ -8,10 +8,6 @@ $num = $_GET['num'];
 if ($num == 0)
 	die('Impossibile selezionare 0 pezzi');
 
-//include('db_conn.php');
-
-//prodotti deve essere aggiornato e disponibili deve rimanere consistente, lock in scrittura
-//su prenotazioni si fa lettura/scrittura, necessario lock in scrittura
 $query = 'LOCK TABLES negozio.prodotti WRITE, negozio.prenotazioni WRITE';
 $result = mysql_query($query, $link);
 if (!$result)
@@ -47,7 +43,6 @@ if ($num <= $row["disponibili"]) {
 	}
 	else {
 		//aggiungere alla prenotazione e rinnovare la scadenza (lock in scrittura garantisce che non venga mod. entry)
-		//nota: se la pagina viene ricaricata, vengono nuovamente aggiunti dei pezzi alla prenotazione esistente
 		$query = "UPDATE negozio.prenotazioni
 				SET pezzi = pezzi +".$num.", scadenza = DATE_ADD(NOW(), INTERVAL 1 HOUR)
 				WHERE prod_id = ".$id." and user_id = '".$_SESSION['user']."';";
@@ -64,8 +59,6 @@ if ($num <= $row["disponibili"]) {
 	$result = mysql_query($query, $link);
 	if (!$result)
 		die ('Invalid query: ' . mysql_error());
-	
-	//formConferma($id, $num, $link);
 }
 else {
 	$query = "UNLOCK TABLES;";
@@ -83,15 +76,3 @@ if (!$result)
 mysql_close ($link);
 header("Location: carrello.php");
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-"http://www.w3.org/TR/html4/loose.dtd">
-<html>
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<title>Negozio Virtuale</title>
-	</head>
-	<body>
-		<div>
-		</div>
-	</body>
-</html>

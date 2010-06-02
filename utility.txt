@@ -14,3 +14,51 @@ TODO generali:
 * controllare che gli unlock vengano sempre fatti alla fine di ogni operazione (es quando si esce con die)
 * giustificare tutti i lock
 * fare accessi contemporanei al db
+
+RIEPILOGO LOCK:
+scheda.php:
+	//lock su prenotazioni perché un altro utente potrebbe leggere le stesse entry da
+	//cancellare e ci potrebbero essere corse sulla cancellazione (non devono essere
+	//lette entry destinate alla cancellazione), su prodotti
+	//perché si modifica la disponibilità e non si vuole che qualche utente
+	//la legga in stato inconsistente
+
+	#dopo l'unlock, prima della successiva query
+	//recupero informazioni prodotto selezionato
+	//il campo disponibili potrebbe non essere aggiornato (appena modificato da
+	//un'altra query), ma è inutile prendere il lock, non risolverebbe questo problema
+	//se il campo venisse riscritto subito dopo la lettura.
+	//La consistenza della lettura, anche se è in corso una scrittura, è
+	//garantita da mysql (TODO: verificare quest'ultima frase!)
+	//TODO: valutare se necessario lock in lettura qui
+acquista.php:
+	//prodotti deve essere aggiornato e disponibili deve rimanere consistente, lock in scrittura
+	//su prenotazioni perché si fa lettura/scrittura quando si aggiorna
+carrello.php:
+	//mostra tutte le prenotazioni dell'utente loggato
+	//non necessario lock perché tanto quando l'utente usa ELIMINA o PAGA dal carrello,
+	//viene sempre riverificata la presenza della entry.
+elimina.php:
+	//Necessario lock in scrittura perché potrebbe essere effettuato contemporanemente un pagamento
+	//TODO: probabilmente lock su prenotazioni non serve: ci si prende il numero di oggetti da rimettere disp,
+	//può cambiare se la prenotazione scade o se l'utente (lo stesso) lo aumenta, e ci si cancella
+	//la entry (unica se esiste) della prenotazione. Per la lettura di pezzi, nel primo caso (che si può
+	//verificare comunque, anche avendo il lock, leggi commento sotto), la query di aggiornamento non modifica niente, 
+	//nel secondo, correttamente viene incrementato disponibili di tutti i pezzi che erano prenotati.
+	//Possibile caso da considerare: l'utente è loggato da due postazioni (!) da una parte fa aggiungi e dall'altra fa
+	//elimina: per non eliminare anche i nuovi pezzi prenotati sarebbe necessario il lock, ma comunque solo in lettura.
+	//problema, se non si locka in scrittura, si rischia di eliminare una prenotazione appena creata
+pagamento.php:
+	/*l'utente ha visto il riepilogo delle sue prenotazioni e a quanto
+	ammonta la cifra da pagare. C'è un pulsante "Conferma pagamento".
+	Quando viene cliccato:*/
+	//lock su prenotazioni perché occorre vedere se la prenotazione c'è
+	//ancora quando si conferma (non possiamo permettere che venga avviata
+	//la pulizia delle prenotazioni scadute se l'ut. ha confermato il
+	//pagamento subito prima della scadenza)
+	//il lock in lettura non basta perché l'utente potrebbe rivedere
+	//la prenotazione nel suo carrello tra quando conferma il pagamento e quando
+	//questo viene completato.
+	//TODO: però anche se succedesse non ci sarebbero problemi, tanto sia se clicca elimina che
+	//paga, viene riverificata la presenza della prenotazione. Quindi forse basta il
+	//lock in lettura. Problema: qualcun altro può leggere la prenotazione, che poi invece viene cancellata...

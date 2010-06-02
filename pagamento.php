@@ -14,29 +14,13 @@ include('db_conn.php');
 		<?php
 		$id_prod = $_GET['id'];
 		$num = $_GET['num'];
-
-		//include('db_conn.php');
 		
-		/*l'utente ha visto il riepilogo delle sue prenotazioni e a quanto
-		ammonta la cifra da pagare. C'è un pulsante "Conferma pagamento".
-		Quando viene cliccato:*/
-		//lock su prenotazioni perché occorre vedere se la prenotazione c'è
-		//ancora quando si conferma (non possiamo permettere che venga avviata
-		//la pulizia delle prenotazioni scadute se l'ut. ha confermato il
-		//pagamento subito prima della scadenza)
-		//il lock in lettura non basta perché l'utente potrebbe rivedere
-		//la prenotazione nel suo carrello tra quando conferma il pagamento e quando
-		//questo viene completato.
-		//TODO: però anche se succedesse non ci sarebbero problemi, tanto sia se clicca elimina che
-		//paga, viene riverificata la presenza della prenotazione. Quindi forse basta il
-		//lock in lettura. Problema: qualcun altro può leggere la prenotazione, che poi invece viene cancellata...
 		$query = "LOCK TABLES negozio.prenotazioni WRITE;";
 		$result = mysql_query($query, $link);
 		if (!$result)
 			die ('Invalid query: ' . mysql_error());
 
-		/*verifica esistenza prenotazione*/
-		//se esiste: avvia transazione con banca; else messaggio all'utente
+		//verifica esistenza prenotazione
 		$query = "SELECT * FROM negozio.prenotazioni
 				  WHERE prod_id = ".$id_prod." AND user_id = '".$_SESSION['user']."';";
 
@@ -52,7 +36,6 @@ include('db_conn.php');
 			if (!$result)
 				die ('Invalid query: ' . mysql_error());
 
-			//invia una pagina di errore all'utente
 			echo "<h3>La sua prenotazione è scaduta o inesistente. Il pagamento con la
 					banca non è avvenuto.</h3>";		
 		}
@@ -72,10 +55,9 @@ include('db_conn.php');
 			if (!$result)
 				die ('Invalid query: ' . mysql_error());
 			
-			//transazione con la banca:
-			//la banca risponde in 10 secondi inviando l'esito del pagamento
+			//transazione simulata con la banca
 			sleep(rand(1,10));
-			//esito pagamento random
+			//esito pagamento
 			$esito = rand(0,1);
 			if ($esito){
 				//pagamento completato

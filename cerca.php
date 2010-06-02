@@ -17,10 +17,7 @@ include('db_conn.php');
 
 		<div>
 		<?php
-		//include('db_conn.php');
-
 		echo '<br />';
-		//TODO: valutare se necessario lock in lettura qui
 		$query = "(select * from negozio.prodotti\n
 				   where nome LIKE '%$prodotto%')\n
 				   union
@@ -32,8 +29,6 @@ include('db_conn.php');
 		if (!$result)
 			die ('Invalid query: ' . mysql_error() );
 			
-		//create a table to show results
-		//header
 		echo "<table border=\"1\"><TR><TH>";
 		echo 'nome prodotto' . "</TH><TH>" . 'parole chiave' . "</TH><TH>";
 		echo 'pezzi disponibili' . "</TH><TH>" . 'prezzo';

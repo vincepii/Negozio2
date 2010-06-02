@@ -12,17 +12,10 @@ include('db_conn.php');
 	<body>
 		<div>
 		<?php
-		//lock in lettura sul DB (togliere disp dalla pag prec?)
-		//invio richiesta di acquisto al server (che dovrà riverificare info)
 		$id = $_GET['id'];
-		//include('db_conn.php');
 				
 		echo "<br />";
 		
-		//lock su prenotazioni perché un altro utente potrebbe leggere le stesse entry da
-		//cancellare e ci potrebbero essere corse sulla cancellazione, su prodotti
-		//perché si modifica la disponibilità e non si vuole che qualche utente
-		//la legga in stato inconsistente
 		$query = 'LOCK TABLES negozio.prenotazioni WRITE, negozio.prodotti WRITE;';
 		$result = mysql_query($query, $link);
 		if (!$result)
@@ -52,13 +45,6 @@ include('db_conn.php');
 		if (!$result)
 			die ('Invalid query: ' . mysql_error());
 		
-		//recupero informazioni prodotto selezionato
-		//il campo disponibili potrebbe non essere aggiornato (appena modificato da
-		//un'altra query), ma è inutile prendere il lock, non risolverebbe questo problema
-		//se il campo venisse riscritto subito dopo la lettura.
-		//La consistenza della lettura, anche se è in corso una scrittura, è
-		//garantita da mysql (TODO: verificare quest'ultima frase!)
-		//TODO: valutare se necessario lock in lettura qui
 		$query = "(select * from negozio.prodotti\n
 				   where id = '$id')";
 				
@@ -66,7 +52,6 @@ include('db_conn.php');
 		if (!$result)
 			die ('Invalid query: ' . mysql_error() );
 				
-		//'id' è unico
 		$row = mysql_fetch_assoc($result);
 		//crea pagina con i dati del prodotto
 		echo "<H1>" . $row['nome'] . "</H1>";
@@ -97,6 +82,8 @@ include('db_conn.php');
 	    </div>
 	    <script type="text/javascript">
 	    function check_disp(n, id) {
+			//controlli lato client sul numero di pezzi, avendo js abilitato
+			//si evita di avere errore in acquista.php
 		    d = document.Acquista.num.value;
 		    if (d == 0) {
 				alert("Impossibile selezionare 0 pezzi");
