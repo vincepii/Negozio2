@@ -1,0 +1,63 @@
+Negozio Virtuale
+
+=======================================
+Pagina principale
+
+L'utente che si collega al sito visualizza una pagina nella quale viene richiesto il login tramite username e password.
+Nel caso in cui i dati forniti dall'utente non siano corretti, viene visualizzata la pagina registrazione.php, nella quale è possibile compilare un form per l'inserimento dei dati del nuovo utente (la password viene codificata con sha1). Questa pagina è ugualmente raggiungibile usando il link in calce al form.
+Se i dati forniti dall'utente sono corretti, viene creata una nuova sessione in cui è salvato l'username inserito e viene creato un cookie con le credenziali che consentano al client di identificare il server (si suppone che la comunicazione avvenga su un canale sicuro). Al cookie è anche associata una scadenza.
+Se la pagina principale viene visualizzata quando una sessione è già attiva ($_SESSION['user'] è settato), l'utente viene automaticamente rimandato alla pagina start.php.
+Dal momento in cui viene attivata una nuova sessione, l'utente ha sempre a disposizione i pulsanti per il logout (la pagina logout.php semplicemente distrugge la sessione e rimanda l'utente ad index.php), per il ritorno alla pagina principale e per la visualizzazione del carrello.
+
+=======================================
+Ricerca prodotto
+
+Nella pagina start.php è possibile immettere una parola chiave per ricercare un prodotto del negozio virtuale.
+Cliccando sul pulsante avvia viene chiamata la pagina cerca.php, a cui è passata la parola chiave con metodo get, che mostra i risultati della ricerca (letti da database).
+Per ogni prodotto è possibile visualizzare informazioni dettagliate (descrizione, immagine, prezzo, disponibilità), cliccando sul pulsante "Visualizza".
+La pressione di questo pulsante rimanda alla pagina scheda.php, che mostra le informazioni sul prodotto selezionato.
+Il codice php di questa pagina esegue anche la pulizia di tutte le prenotazioni scadute, ed il ripristino delle quantità che erano state prenotate.
+L'utente può specificare la quantità desiderata e procedere con l'acquisto.
+Un controllo javascript sulla quantità disponibile evita che l'utente selezioni un numero maggiore di pezzi rispetto a quelli presenti. Tuttavia l'informazione sul numero di pezzi attualmente presenti nel DB potrebbe non essere più vera (non c'è alcun lock in lettura sulla tabella dei prodotti), quindi dopo l'eventuale avviso di richiesta eccedente le disponibilità, la pagina viene ricaricata, mostrando eventualmente una variazione nel numero di pezzi disponibili.
+Il controllo javascript consente all'utente di risparmiare tempo, ma è ovviamente non affidabile, per questo uno analogo viene replicato in php nella pagina successiva (chiamata quando l'utente clicca sul pulsante "Acquista").
+
+=======================================
+Acquisto prodotto
+
+La pagina acquista.php esegue codice che necessita il lock in scrittura delle tabelle "prodotti" e "prenotazioni", dato che su entrambe devono essere fatte delle operazioni di READ_MODIFY_WRITE.
+La prima operazione è la verifica delle disponibilità del prodotto rispetto alla quantità richiesta dall'utente, si procede solamente se la quantità richiesta non eccede le disponilità.
+Se per il prodotto acquistato dall'utente esisteva già una prenotazione, viene incerementato il numero di pezzi e rinnovata la scadenza a partire dall'istante attuale (anche per i prodotti precedentemente prenotati), altrimenti viene creata una nuova prenotazione.
+Quindi viene decrementato il numero di pezzi disponibili dalla tabella prodotti.
+Il lock viene rilasciato e l'utente viene rimandato alla pagina carrello.php che propone un riepilogo degli oggetti prenotati, con alcune informazioni e due pulsanti per annullare la prenotazione e per inviare il pagamento.
+
+=======================================
+Eliminazione prodotto
+
+Dal carrello è possibile annullare una prenotazione, alla pressione del pulsante "Elimina" viene richiamata la pagina elimina.php.
+Nel codice php di questa pagina, viene acquisito il lock in scrittura sulle tabelle prodotti e prenotazioni, si dovrà infatti cancellare la prenotazione da annullare e ripristinare le quantità nella tabella prodotti.
+
+=======================================
+Pagamento prodotto
+
+Se dal carrello si clicca sul pulsante "Paga", viene chiamata la pagina pagamento.php, che simula una transazione con un ente esterno (una banca) ed indica all'utente se il pagamento si è concluso con successo o meno.
+Nella pagina deve essere usata solamente la tabella "prenotazioni", dato che i prodotti allocati sono già stati decurtati dalle disponibilità.
+L'operazione viene svolta in questo modo: si suppone che il pagamento vada a buon fine, per cui si cancella la prenotazione, quindi si contatta l'ente esterno per la gestione del pagamento e si attende un esito. Nel caso in cui l'operazione si sia svolta correttamente, non si deve fare niente, la prenotazione è già stata cancellata ed i prodotti sono stati acquistati dall'utente (eventualmente si dovrebbe usare una tabella per gestire le spedizioni).
+Se invece il pagamento non avviene correttamente, si ripristina la prenotazione e si informa l'utente di riprovare con il pagamento.
+Procedendo in questo modo, può essere acquisito un lock in scrittura sulla tabella "prenotazioni", che verrà rilasciato prima di eseguire la transazione con la banca, dato che la sua durata non è determinabile né dipendente dal fornitore del servizio di negozio virtuale.
+Nel caso in cui si debba ripristinare la prenotazione (pagamento non confermato), si riprenderà il lock in scrittura.
+
+=======================================
+Tabelle usate
+
+L'applicazione usa un database MySql per la gestione delle informazioni sugli utenti e sui prodotti.
+Le tabelle utilizzate sono le seguenti:
+
+prodotti:
+	*ID*|NOME|TAG|DISPONIBILI|PREZZO|DESCRIZIONE|IMMAGINE
+	
+prenotazioni:
+	*PROD_ID*|*USER_ID*|PREZZI|SCADENZA
+	
+utenti:
+	*USER_ID*|PASSWORD
+
